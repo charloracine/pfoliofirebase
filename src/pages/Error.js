@@ -7,7 +7,7 @@ const Error = () => {
   return (
     <div>
       This page does not exist!
-      <Button onClick={() => navigate("/homepage")}>Homepage</Button>
+      <Button onClick={() => navigate("")}>Homepage</Button>
     </div>
   );
 };
