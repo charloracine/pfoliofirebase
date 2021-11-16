@@ -24,14 +24,14 @@ const Projects = () => {
     <div>
       <Container>
         <Box display="flex" flexWrap="wrap">
-          {allProjects.map(({ domain, title, summary, id }) => (
+          {allProjects.map(({ domain, title, summary, id, images, folder }) => (
             <Card key={title} style={{ margin: "1em", maxWidth: "575px" }}>
               <CardActionArea onClick={() => navigate(id)}>
                 <CardMedia
                   component="img"
                   height="140"
-                  image="/static/images/cards/contemplative-reptile.jpg"
-                  alt="img alt"
+                  image={`/images/${folder}/${images[0].fileName}`}
+                  alt={images[0].legend}
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">

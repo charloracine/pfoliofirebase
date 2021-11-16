@@ -1,9 +1,4 @@
-import {
-  Button,
-  FormControl,
-  Paper,
-  TextField,
-} from "@material-ui/core";
+import { Button, FormControl, Paper, TextField } from "@material-ui/core";
 import React, { useState } from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { addDoc, collection } from "@firebase/firestore";
@@ -15,22 +10,20 @@ const emptyProject = {
   summary: "",
   team: [],
   tech: [],
-  images: [
-    {
-      alt: "",
-      src: "",
-    },
-  ],
+  images: [],
   scripts: [],
+  gist: "",
   url: "",
+  folder: "",
 };
 
 const FormProjects = () => {
   const [projet, setProjet] = useState(emptyProject);
   const [teamate, setTeamate] = useState("");
   const [tech, setTech] = useState("");
-  const [gist, setGist] = useState({
-    gist: "",
+  const [gist, setGist] = useState("");
+  const [img, setImg] = useState({
+    legend: "",
     fileName: "",
   });
 
@@ -39,6 +32,25 @@ const FormProjects = () => {
       ...currentState,
       [prop]: value,
     }));
+  };
+
+  const handleImg = (value, prop) => {
+    setImg((currentState) => ({
+      ...currentState,
+      [prop]: value,
+    }));
+  };
+
+  const addToImgArray = () => {
+    setProjet((currentState) => ({
+      ...currentState,
+      images: [...currentState.images, img],
+    }));
+
+    setImg({
+      legend: "",
+      fileName: "",
+    });
   };
 
   const addToArray = (event) => {
@@ -65,19 +77,17 @@ const FormProjects = () => {
     }
   };
 
-  const addToGistArray = () => {
-    setProjet((currentState) => ({
-      ...currentState,
-      scripts: [...currentState.scripts, gist],
-    }));
+  const addToGistArray = (event) => {
+    if (event.keyCode === 13 && valid(gist)) {
+      event.preventDefault();
+      setProjet((currentState) => ({
+        ...currentState,
+        scripts: [...currentState.scripts, gist],
+      }));
 
-    setGist({
-      gist: "",
-      fileName: "",
-    });
+      setGist("");
+    }
   };
-
-  console.log(projet);
 
   const valid = (toVerify) => {
     let isValid = false;
@@ -97,11 +107,8 @@ const FormProjects = () => {
     setTech(event.target.value);
   };
 
-  const handleGist = (value, prop) => {
-    setGist((currentState) => ({
-      ...currentState,
-      [prop]: value,
-    }));
+  const handleGist = (event) => {
+    setGist(event.target.value);
   };
 
   const deleteName = (nom) => {
@@ -145,8 +152,11 @@ const FormProjects = () => {
   ));
 
   const listGistItems = projet.scripts.map((item) => (
-    <li key={item.gist}>
-      {item.gist} + {item.fileName}
+    <li key={item}>{item}</li>
+  ));
+  const listImgItems = projet.images.map(({ fileName, legend }) => (
+    <li key={fileName}>
+      {fileName} + {legend}
     </li>
   ));
 
@@ -189,17 +199,38 @@ const FormProjects = () => {
             <TextField
               label="Gist"
               variant="standard"
-              value={gist.gist}
-              onChange={(e) => handleGist(e.target.value, "gist")}
+              value={projet.gist}
+              onChange={(e) => handleChange(e.target.value, "gist")}
             />
             <TextField
               label="FileName"
               variant="standard"
-              value={gist.fileName}
-              onChange={(e) => handleGist(e.target.value, "fileName")}
+              value={gist}
+              onChange={handleGist}
+              onKeyDown={(e) => addToGistArray(e, "gist")}
             />
-            <Button variant="contained" onClick={() => addToGistArray()}>
-              Add gist
+          </FormControl>
+          <FormControl>
+            <TextField
+              label="Img folder"
+              variant="standard"
+              value={projet.folder}
+              onChange={(e) => handleChange(e.target.value, "folder")}
+            />
+            <TextField
+              label="img fileName"
+              variant="standard"
+              value={img.fileName}
+              onChange={(e) => handleImg(e.target.value, "fileName")}
+            />
+            <TextField
+              label="img alt"
+              variant="standard"
+              value={img.legend}
+              onChange={(e) => handleImg(e.target.value, "legend")}
+            />
+            <Button variant="contained" onClick={() => addToImgArray()}>
+              Add image
             </Button>
           </FormControl>
           <Button variant="outlined" type="submit">
@@ -210,6 +241,7 @@ const FormProjects = () => {
         <ul>Teamates: {listItems}</ul>
         <ul>Technologies: {listTechItems}</ul>
         <ul>Gists: {listGistItems}</ul>
+        <ul>Images: {listImgItems}</ul>
       </form>
     </Paper>
   );
